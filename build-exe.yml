@@ -1,0 +1,33 @@
+name: Build Windows EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Preparar o Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Montar o site (build)
+        run: npm run build
+
+      - name: Gerar o instalador .exe
+        run: npx electron-builder --win nsis
+
+      - name: Disponibilizar o .exe para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: PROJTEC-1D-Windows
+          path: release/*.exe
